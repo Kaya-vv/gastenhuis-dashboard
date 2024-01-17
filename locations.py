@@ -1,0 +1,33 @@
+# locations.py
+
+locations = {
+    'Almere Duin': 'almere-duin',
+    'Amsterdam Overhoeks (opent in 2025)': 'amsterdam-overhoeks',
+    'Bennekom': 'bennekom',
+    'Bergen op Zoom': 'bergen-op-zoom',
+    'Deurne': 'deurne',
+    'Dordrecht': 'dordrecht',
+    'Druten': 'druten',
+    'Emmen (opent in 2024)': 'emmen',
+    'Etten-Leur': 'etten-leur',
+    'Geldermalsen (opent in 2024)': 'geldermalsen',
+    'Goes': 'goes',
+    'Gorinchem': 'gorinchem',
+    'Harderwijk': 'harderwijk',
+    'Hoevelaken': 'hoevelaken',
+    'Kerkdriel': 'kerkdriel',
+    'Leusden': 'leusden',
+    'Maastricht (opent in 2024)': 'maastricht',
+    'Nijmegen (opent in 2024)': 'nijmegen',
+    'Oosterbeek': 'oosterbeek',
+    'Roden': 'roden',
+    'Roermond': 'roermond',
+    'Soesterberg (opent in 2024)': 'soesterberg',
+    'Teteringen': 'teteringen',
+    'Vleuten': 'vleuten',
+    'Vlijmen': 'vlijmen',
+    'Voorschoten (opent in 2025)': 'voorschoten',
+    'Warmond': 'warmond',
+    'Zwolle': 'zwolle',
+    'Geen voorkeur': 'aanmelding'
+}
