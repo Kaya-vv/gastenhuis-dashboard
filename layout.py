@@ -75,13 +75,7 @@ def app_layout(fig, form_name, info_bijeenkomst):
     # Initialize Dash app
 
     app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX, 'assets/styles.css'], suppress_callback_exceptions=True)
-    VALID_USERNAME_PASSWORD_PAIRS = {
-        'admin': 'Gast1076!@!'
-    }
-    auth = dash_auth.BasicAuth(
-        app,
-        VALID_USERNAME_PASSWORD_PAIRS
-    )
+
     app.layout = html.Div(style={'overflowY': 'auto', 'display': 'flex', 'height': '100vh'}, children=[
         html.Div(sidebar, style={'flex': '0 0 25%', 'background': '#f8f9fa', 'padding': '25px'}),
         html.Div(style={'display': 'flex', 'flexDirection': 'column', 'flex': '1', 'padding': '10px'}, children=[
