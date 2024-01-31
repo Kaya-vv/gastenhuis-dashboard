@@ -92,6 +92,8 @@ class DataHandler:
         print(entries)
         data = entries['entries']
         df = pd.DataFrame(data)
+        if df.empty:
+            return df, df
 
         keep_columns = ['1', '2', '5', '17', '9', '8', '6']
         presentielijst = ['1']

@@ -50,6 +50,7 @@ def update_graph(value, selected_location, info_bijeenkomst, start_date, end_dat
         px.update_traces(marker_color='#c4336d', hovertemplate='%{x}: %{y}')  # Set bar color
     if info_bijeenkomst:
         header_text = info_bijeenkomst
+        info_bijeenkomst = "Informatiebijeenkomst " + info_bijeenkomst
         df, df2 = data.get_infobijeenkomst(infobijeenkomst_form[info_bijeenkomst])
         return [html.Button(
             "Export naar Excel",

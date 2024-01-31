@@ -18,6 +18,7 @@ load_figure_template('LUX')
 
 data = DataHandler(KEY, SECRET)
 infobijeenkomst_form, info_name = get_info_data()
+
 start_date_one_week_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
 end_date_today = datetime.today().strftime('%Y-%m-%d')
 fig = data.get_entries("Brochure wonen", start_date_one_week_ago, end_date_today)
