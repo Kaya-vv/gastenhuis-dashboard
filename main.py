@@ -1,4 +1,4 @@
-
+import os
 from datetime import datetime, timedelta
 from layout import app_layout
 from dash_bootstrap_templates import load_figure_template
@@ -45,4 +45,4 @@ app.callback(
 
 # Run the app
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=int(os.environ.get('PORT', 8050)))
