@@ -7,7 +7,8 @@ from callbacks import update_graph, download_excel
 from config import KEY, SECRET, form_name
 from data_handler import DataHandler
 from utils import get_info_data
-
+import sys
+print("Python Version:", sys.version)
 load_figure_template('LUX')
 
 # TODO: Facebook ads api koppelen met gekozen vestiging
