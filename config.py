@@ -4,11 +4,9 @@ base_url = 'https://hetgastenhuis.nl/wp-json/gf/v2'
 forms = {
     "Brochure wonen": 5,
     "Brochure werken": 43,
-    "Klantaanmeldingen": 2
+    "Klantaanmeldingen": 2,
+
 }
-
-
-infobijeenkomst_form = {}
 
 
 form_name = list(forms.keys())
@@ -16,5 +14,6 @@ form_name = list(forms.keys())
 form_field_id = {
     "Brochure wonen": 1,
     "Brochure werken": 16,
-    "Klantaanmeldingen": 4
+    "Klantaanmeldingen": 4,
+
 }

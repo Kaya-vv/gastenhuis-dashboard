@@ -48,14 +48,17 @@ class DataHandler:
 
         # Create a dictionary with month names as keys and occurrences as values
         monthly_counts_dict = dict(monthly_counts)
-
-        return px.bar(x=monthly_counts_dict.keys(), y=monthly_counts_dict.values(),
+        reversed_keys = list(monthly_counts_dict.keys())[::-1]
+        reversed_values = [monthly_counts_dict[key] for key in reversed_keys]
+        print(reversed_keys)
+        print(reversed_values)
+        return px.bar(x=reversed_keys, y=reversed_values,
                       title=f"Inzendingen per maand voor {locations[selected_location]} - {form_name}")
 
     def get_entries(self, form_name, start_date, end_date):
 
         url = f'{base_url}/forms/{forms[form_name]}/entries'
-
+        print(form_name)
         params = {
             'paging[page_size]': 500,
         }
@@ -64,22 +67,41 @@ class DataHandler:
         entries = response.json()
 
         locations = []
-        location_count = {}
 
+        location_sources = {}
+        color_map = {
+            'Facebook': '#3b5998',  # Facebook blue
+            'Instagram': '#e4405f',  # Instagram pink
+            'LinkedIn': '#0077b5',  # LinkedIn blue
+            'Google': '#FFD700',  # Google blue
+            'Via de lokale of regionale kranten of media': '#ea4335',  # Google red
+            'Via kennissen/vrienden/familie': '#55acee'  # Twitter blue
+        }
         for entry in entries['entries']:
 
             if start_date <= entry['date_created'] <= end_date:
                 id = str(form_field_id[form_name])
-                locations.append(entry[id])
+                location = entry[id]
+                locations.append(location)
 
-        for location in locations:
-            location_count[location] = location_count.get(location, 0) + 1
+                source = entry['14']
+                if form_name == "Klantaanmeldingen":
+                    source = entry['16']
 
-        locations = list(location_count.keys())
+                # Bronnen verzamelen als anders
+                if source not in color_map:
+                    source = "Anders"
 
-        occurences = list(location_count.values())
+                if location not in location_sources:
+                    location_sources[location] = {}
+                location_sources[location][source] = location_sources[location].get(source, 0) + 1
 
-        return px.bar(x=locations, y=occurences, title="Per vestiging")
+        long_data = [{'Locatie': location, 'Bron': source, 'Aantal': count}
+                     for location, sources in location_sources.items()
+                     for source, count in sources.items()]
+
+        return px.bar(long_data, x="Locatie", y="Aantal", color="Bron", barmode='stack',
+                      hover_data=['Locatie', 'Aantal', 'Bron'], color_discrete_map=color_map, title="Per vestiging")
 
     def get_infobijeenkomst(self, form_id):
         url = f'{base_url}/forms/{form_id}/entries'
@@ -117,7 +139,33 @@ class DataHandler:
 
         df.insert(0, 'Aantal', range(1, len(df) + 1))
         df2.insert(0, 'Aantal', range(1, len(df2) + 1))
-        return df, df2
+
+        # balk grafiek
+        monthly_counts = defaultdict(int)
+
+        for request in entries['entries']:
+            date_str = request['date_created']
+            # Convert string to datetime object
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+            # Format month as full month name
+            month_name = date_obj.strftime('%B')
+            # Extract year
+            year = date_obj.strftime('%Y')
+            # Combine month and year
+            month_year = f'{month_name} {year}'
+            # Increment count for the corresponding month
+            monthly_counts[month_year] += 1
+
+        # Create a dictionary with month names as keys and occurrences as values
+        monthly_counts_dict = dict(monthly_counts)
+        reversed_keys = list(monthly_counts_dict.keys())[::-1]
+        reversed_values = [monthly_counts_dict[key] for key in reversed_keys]
+        print(reversed_keys)
+        print(reversed_values)
+        bar = px.bar(x=reversed_keys, y=reversed_values,
+                     title=f"Inzendingen per maand voor bijeenkomst")
+
+        return df, df2, bar
 
     def get_info_forms(self):
         url = f'{base_url}/forms/'

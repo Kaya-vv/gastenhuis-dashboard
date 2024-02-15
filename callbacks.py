@@ -21,17 +21,34 @@ def update_graph(value, selected_location, info_bijeenkomst, start_date, end_dat
     header_text = "Formulieren Dashboard"
     if selected_location:
         header_text = selected_location
+        print(value)
         # If a location is selected, display a chart for that location
         px = data.get_entries_per_location(value, selected_location)
-        px.update_layout(
-            yaxis=dict(categoryorder='total descending'),
-            title_x=0.5,
-            xaxis_title='Date',
-            yaxis_title='Occurrences',
-            plot_bgcolor='#ecf0f1',
-            paper_bgcolor='#ecf0f1'
-        )
-        px.update_traces(marker_color='#c4336d', hovertemplate='%{x}: %{y}')
+        if value == "Brochure wonen":
+            px2 = data.get_entries_per_location("Klantaanmeldingen", selected_location)
+
+            px.update_layout(
+                yaxis=dict(categoryorder='total descending'),
+                title_x=0.5,
+                xaxis_title='Date',
+                yaxis_title='Occurrences',
+                plot_bgcolor='#ecf0f1',
+                barmode="group",
+                paper_bgcolor='#ecf0f1'
+            )
+            px.update_traces(marker_color='#c4336d', hovertemplate='Brochures: %{y}')
+            px2.update_traces(marker_color='#3498db', hovertemplate='Klantaanmeldingen: %{y}')
+            px.add_traces(px2.data)
+        else:
+            px.update_layout(
+                yaxis=dict(categoryorder='total descending'),
+                title_x=0.5,
+                xaxis_title='Date',
+                yaxis_title='Occurrences',
+                plot_bgcolor='#ecf0f1',
+                paper_bgcolor='#ecf0f1'
+            )
+            px.update_traces(marker_color='#c4336d', hovertemplate='%{x}: %{y}')
     else:
         # If no location is selected, display a bar chart
 
@@ -41,18 +58,20 @@ def update_graph(value, selected_location, info_bijeenkomst, start_date, end_dat
             title_text=f'{value}',
             title_x=0.5,  # Center the chart title
             xaxis_title='Vestigingen',
+            legend=dict(title='Bron:', orientation='h', y=1, x=0.5, xanchor='center', yanchor='bottom'),
             yaxis_title='Aantal',
-            showlegend=False,  # Hide legend
+            showlegend=True,  # Hide legend
             plot_bgcolor='#ecf0f1',  # Set plot background color
             paper_bgcolor='#ecf0f1',  # Set paper background color
             xaxis=dict(categoryorder='total descending')
         )
-        px.update_traces(marker_color='#c4336d', hovertemplate='%{x}: %{y}')  # Set bar color
+
     if info_bijeenkomst:
         header_text = info_bijeenkomst
         info_bijeenkomst = "Informatiebijeenkomst " + info_bijeenkomst
-        df, df2 = data.get_infobijeenkomst(infobijeenkomst_form[info_bijeenkomst])
-        return [html.Button(
+        df, df2, bar = data.get_infobijeenkomst(infobijeenkomst_form[info_bijeenkomst])
+        bar.update_traces(marker_color='#c4336d', hovertemplate='%{x}: %{y}')  # Set bar color
+        tabs_content = [html.Button(
             "Export naar Excel",
             id="excel-button",
             style={'margin-top': '10px'},
@@ -84,6 +103,15 @@ def update_graph(value, selected_location, info_bijeenkomst, start_date, end_dat
                 data=df.to_dict('records')
             ),
 
+        ]
+        return [
+            dcc.Tabs(id='tabs', value='tab1', children=[
+                dcc.Tab(label='Inzendingen tabel', value='tab1', selected_style={'width': '25%'},
+                        style={'width': '25%'}, children=tabs_content),
+                dcc.Tab(label='Balk grafiek', value='tab2', selected_style={'width': '25%'}, style={'width': '25%'},
+                        children=dcc.Graph(
+                            figure=bar)),
+            ])
         ], header_text
 
     return [dcc.Graph(id='graph1', figure=px)], header_text
@@ -94,13 +122,14 @@ def download_excel(n_clicks, info_bijeenkomst):
         raise PreventUpdate
 
     # Assuming df is your DataFrame
-    df, df2 = data.get_infobijeenkomst(infobijeenkomst_form[info_bijeenkomst])
+    info_bijeenkomst = "Informatiebijeenkomst " + info_bijeenkomst
+    df, df2, bar = data.get_infobijeenkomst(infobijeenkomst_form[info_bijeenkomst])
 
     # Create an ExcelWriter object
     excel_writer = pd.ExcelWriter(info_bijeenkomst + ".xlsx", engine='xlsxwriter')
 
     # Write the DataFrame to Excel using ExcelWriter
-    df.to_excel(excel_writer, index=False, sheet_name="Totaallijst" )
+    df.to_excel(excel_writer, index=False, sheet_name="Totaallijst")
     df2.to_excel(excel_writer, index=False, sheet_name="Presentielijst")
     totaal_sheet = excel_writer.sheets["Totaallijst"]
     # Adjusting column width

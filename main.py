@@ -11,14 +11,13 @@ import sys
 print("Python Version:", sys.version)
 load_figure_template('LUX')
 
-# TODO: Facebook ads api koppelen met gekozen vestiging
-# TODO: Informatiebijeenkomst toevoegen als balkgrafiek aan algemene formulier
-# TODO: Voor later misschien een zoekfunctie naar naam/email? Aan ellis vragen
-# TODO: Activecampaign API Campagne grafieken
+# TODO: Bar chart returnen in dcc.tabs van callbacks.py,
+#  hiervoor moet je get_infobijeenkomst aanpassen (overnemen van get_per_locatie)
 
 
 data = DataHandler(KEY, SECRET)
 infobijeenkomst_form, info_name = get_info_data()
+
 
 start_date_one_week_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
 end_date_today = datetime.today().strftime('%Y-%m-%d')
