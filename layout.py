@@ -1,4 +1,3 @@
-import dash_auth
 import dash_bootstrap_components as dbc
 from dash import dcc, html, dash_table
 from datetime import date, datetime, timedelta
