@@ -1,10 +1,20 @@
+import os
 import dash_bootstrap_components as dbc
 from dash import dcc, html, dash_table
 from datetime import date, datetime, timedelta
 import dash
 from locations import locations
-
+import dash_auth
+from dotenv import load_dotenv
 start_date_one_week_ago = datetime.now() - timedelta(days=7)
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Retrieve username and password from environment variables
+USERNAME = os.getenv('DASH_USERNAME')
+PASSWORD = os.getenv('DASH_PASSWORD')
+
 def app_layout(fig, form_name, info_bijeenkomst):
     # SiDEBAR
     location_names = list(locations.keys())
@@ -72,9 +82,14 @@ def app_layout(fig, form_name, info_bijeenkomst):
     )
 
     # Initialize Dash app
-
+    VALID_USERNAME_PASSWORD_PAIRS = {
+         USERNAME: PASSWORD
+    }
     app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX, 'assets/styles.css'], suppress_callback_exceptions=True)
-
+    auth = dash_auth.BasicAuth(
+        app,
+        VALID_USERNAME_PASSWORD_PAIRS
+    )
     app.layout = html.Div(style={'overflowY': 'auto', 'display': 'flex', 'height': '100vh'}, children=[
         html.Div(sidebar, style={'flex': '0 0 25%', 'background': '#f8f9fa', 'padding': '25px'}),
         html.Div(style={'display': 'flex', 'flexDirection': 'column', 'flex': '1', 'padding': '10px'}, children=[

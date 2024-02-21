@@ -74,8 +74,9 @@ class DataHandler:
             'Instagram': '#e4405f',  # Instagram pink
             'LinkedIn': '#0077b5',  # LinkedIn blue
             'Google': '#FFD700',  # Google blue
-            'Via de lokale of regionale kranten of media': '#ea4335',  # Google red
-            'Via kennissen/vrienden/familie': '#55acee'  # Twitter blue
+            'Via de lokale of regionale kranten of media': '#C9FFB2',  # Google red
+            'Via kennissen/vrienden/familie': '#55acee',  # Twitter blue
+            'Anders': 'black'
         }
         for entry in entries['entries']:
 
