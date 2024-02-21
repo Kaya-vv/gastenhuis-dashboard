@@ -19,7 +19,7 @@ class DataHandler:
         url = f'{base_url}/forms/{forms[form_name]}/entries'
 
         params = {
-            'paging[page_size]': 500,
+            'paging[page_size]': 2000,
             'search': json.dumps({
                 "field_filters": [
                     {"key": form_field_id[form_name], "value": locations[selected_location], "operator": "contains"}
@@ -60,7 +60,7 @@ class DataHandler:
         url = f'{base_url}/forms/{forms[form_name]}/entries'
         print(form_name)
         params = {
-            'paging[page_size]': 500,
+            'paging[page_size]': 2000,
         }
         response = requests.get(url, auth=self.auth, params=params)
 
