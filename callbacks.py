@@ -21,7 +21,7 @@ def update_graph(value, selected_location, info_bijeenkomst, start_date, end_dat
     header_text = "Formulieren Dashboard"
     if selected_location:
         header_text = selected_location
-        print(value)
+
         # If a location is selected, display a chart for that location
         px = data.get_entries_per_location(value, selected_location)
         if value == "Brochure wonen":
@@ -34,11 +34,19 @@ def update_graph(value, selected_location, info_bijeenkomst, start_date, end_dat
                 yaxis_title='Occurrences',
                 plot_bgcolor='#ecf0f1',
                 barmode="group",
-                paper_bgcolor='#ecf0f1'
+                paper_bgcolor='#ecf0f1',
+
             )
-            px.update_traces(marker_color='#c4336d', hovertemplate='Brochures: %{y}')
-            px2.update_traces(marker_color='#3498db', hovertemplate='Klantaanmeldingen: %{y}')
+            px.update_traces(marker_color='#c4336d', hovertemplate='Brochures: %{y}',
+                             texttemplate='%{y}', textposition='outside')
+            px2.update_traces(marker_color='#3498db', hovertemplate='Klantaanmeldingen: %{y}', texttemplate='%{y}',
+                              textposition='outside')
+
             px.add_traces(px2.data)
+            px.update_layout(
+                margin=dict(t=40),
+
+            )
         else:
             px.update_layout(
                 yaxis=dict(categoryorder='total descending'),
@@ -48,7 +56,9 @@ def update_graph(value, selected_location, info_bijeenkomst, start_date, end_dat
                 plot_bgcolor='#ecf0f1',
                 paper_bgcolor='#ecf0f1'
             )
-            px.update_traces(marker_color='#c4336d', hovertemplate='%{x}: %{y}')
+            px.update_traces(texttemplate='%{y}', textposition='outside', marker_color='#c4336d',
+                             hovertemplate='%{x}: %{y}')
+
     else:
         # If no location is selected, display a bar chart
 

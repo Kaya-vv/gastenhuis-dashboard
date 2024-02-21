@@ -50,8 +50,7 @@ class DataHandler:
         monthly_counts_dict = dict(monthly_counts)
         reversed_keys = list(monthly_counts_dict.keys())[::-1]
         reversed_values = [monthly_counts_dict[key] for key in reversed_keys]
-        print(reversed_keys)
-        print(reversed_values)
+
         return px.bar(x=reversed_keys, y=reversed_values,
                       title=f"Inzendingen per maand voor {locations[selected_location]} - {form_name}")
 
@@ -78,6 +77,7 @@ class DataHandler:
             'Via kennissen/vrienden/familie': '#55acee',  # Twitter blue
             'Anders': 'black'
         }
+
         for entry in entries['entries']:
 
             if start_date <= entry['date_created'] <= end_date:
@@ -95,14 +95,27 @@ class DataHandler:
 
                 if location not in location_sources:
                     location_sources[location] = {}
+
                 location_sources[location][source] = location_sources[location].get(source, 0) + 1
 
         long_data = [{'Locatie': location, 'Bron': source, 'Aantal': count}
                      for location, sources in location_sources.items()
                      for source, count in sources.items()]
 
-        return px.bar(long_data, x="Locatie", y="Aantal", color="Bron", barmode='stack',
-                      hover_data=['Locatie', 'Aantal', 'Bron'], color_discrete_map=color_map, title="Per vestiging")
+        fig = px.bar(long_data, x="Locatie", y="Aantal", color="Bron", barmode='stack',
+                     hover_data=['Locatie', 'Aantal', 'Bron'], color_discrete_map=color_map, title="Per vestiging")
+
+        # Compute the total count for each location
+        location_totals = {}
+        for item in long_data:
+            location_totals[item['Locatie']] = location_totals.get(item['Locatie'], 0) + item['Aantal']
+
+        # Add text annotations to the top of each bar
+        for location, total_count in location_totals.items():
+            fig.add_annotation(x=location, y=total_count * 1.14, text=str(total_count),
+                               showarrow=False, font=dict(size=13))
+
+        return fig
 
     def get_infobijeenkomst(self, form_id):
         url = f'{base_url}/forms/{form_id}/entries'
