@@ -129,7 +129,8 @@ class DataHandler:
         data = entries['entries']
         df = pd.DataFrame(data)
         if df.empty:
-            return df, df
+            bar = px.bar(title="Inzendingen per maand voor bijeenkomst")
+            return df, df, bar
 
         keep_columns = ['1', '2', '5', '17', '9', '8', '6']
         presentielijst = ['1']
@@ -174,8 +175,8 @@ class DataHandler:
         monthly_counts_dict = dict(monthly_counts)
         reversed_keys = list(monthly_counts_dict.keys())[::-1]
         reversed_values = [monthly_counts_dict[key] for key in reversed_keys]
-        print(reversed_keys)
-        print(reversed_values)
+        print(df)
+        print(df2)
         bar = px.bar(x=reversed_keys, y=reversed_values,
                      title=f"Inzendingen per maand voor bijeenkomst")
 
