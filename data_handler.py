@@ -103,7 +103,7 @@ class DataHandler:
         # Create a bar chart
         # Create a bar chart
         fig = px.bar(df_merged, x="locatie", y="uitgave", color="adset_name",
-                     title="Ad Spending by Location",
+                     title="Advertenties",
                      hover_data={"campaign_name": True, "uitgave": True, "adset_name": False},
                      labels={"locatie": "Location", "uitgave": "Spending", "adset_name": "Ad Set"})
 

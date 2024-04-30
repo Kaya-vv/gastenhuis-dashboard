@@ -18,7 +18,7 @@ app = app_layout(fig, form_name, info_name)
 
 
 def update_graph(value, selected_location, info_bijeenkomst, advertenties, start_date, end_date):
-    print(advertenties)
+
     header_text = "Formulieren Dashboard"
     if selected_location:
         header_text = selected_location
@@ -131,7 +131,7 @@ def update_graph(value, selected_location, info_bijeenkomst, advertenties, start
         px = data.get_ad_spending(start_date, end_date)
 
         px.update_layout(
-            title_text=f'{value}',
+            title_text=f'Advertenties',
             title_x=0.5,  # Center the chart title
             xaxis_title='Advertenties',
             legend=dict(title='Bron:', orientation='h', y=1, x=0.5, xanchor='center', yanchor='bottom'),
