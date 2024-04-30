@@ -4,11 +4,11 @@ from layout import app_layout
 import pandas as pd
 from dash.exceptions import PreventUpdate
 from dash_extensions.enrich import html, dcc
-from config import KEY, SECRET, form_name
+from config import KEY, SECRET,ACCESS_TOKEN, account_id, form_name
 from data_handler import DataHandler
 from utils import get_info_data
 
-data = DataHandler(KEY, SECRET)
+data = DataHandler(KEY, SECRET, ACCESS_TOKEN, account_id)
 infobijeenkomst_form, info_name = get_info_data()
 
 start_date_one_week_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
@@ -17,7 +17,8 @@ fig = data.get_entries("Brochure wonen", start_date_one_week_ago, end_date_today
 app = app_layout(fig, form_name, info_name)
 
 
-def update_graph(value, selected_location, info_bijeenkomst, start_date, end_date):
+def update_graph(value, selected_location, info_bijeenkomst, advertenties, start_date, end_date):
+    print(advertenties)
     header_text = "Formulieren Dashboard"
     if selected_location:
         header_text = selected_location
@@ -115,6 +116,7 @@ def update_graph(value, selected_location, info_bijeenkomst, start_date, end_dat
 
         ]
         return [
+
             dcc.Tabs(id='tabs', value='tab1', children=[
                 dcc.Tab(label='Inzendingen tabel', value='tab1', selected_style={'width': '25%'},
                         style={'width': '25%'}, children=tabs_content),
@@ -123,6 +125,23 @@ def update_graph(value, selected_location, info_bijeenkomst, start_date, end_dat
                             figure=bar)),
             ])
         ], header_text
+    if advertenties:
+        header_text = "Alle advertenties"
+
+        px = data.get_ad_spending(start_date, end_date)
+
+        px.update_layout(
+            title_text=f'{value}',
+            title_x=0.5,  # Center the chart title
+            xaxis_title='Advertenties',
+            legend=dict(title='Bron:', orientation='h', y=1, x=0.5, xanchor='center', yanchor='bottom'),
+            yaxis_title='Uitgaven',
+            showlegend=False,  # Hide legend
+            plot_bgcolor='#ecf0f1',  # Set plot background color
+            paper_bgcolor='#ecf0f1',  # Set paper background color
+            xaxis=dict(categoryorder='total descending')
+
+        )
 
     return [dcc.Graph(id='graph1', figure=px)], header_text
 

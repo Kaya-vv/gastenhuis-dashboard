@@ -77,6 +77,22 @@ def app_layout(fig, form_name, info_bijeenkomst):
                 vertical=True,
                 pills=True,
             ),
+            html.Hr(),
+            html.P(
+                "Advertenties", className="ads"
+            ),
+            dbc.Nav(
+                [
+                    dcc.Dropdown(
+                        id='advertenties',
+                        options=[{'label': 'Alle advertenties', 'value': 'ads'}],
+
+                    )
+
+                ],
+                vertical=True,
+                pills=True,
+            ),
         ],
         style=SIDEBAR_STYLE,
     )

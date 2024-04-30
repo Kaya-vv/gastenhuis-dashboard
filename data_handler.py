@@ -7,13 +7,111 @@ import plotly.express as px
 import requests
 from requests_oauthlib import OAuth1Session, OAuth1
 from config import base_url, forms, form_field_id
+pd.set_option('display.max_colwidth', None)
 
+
+pd.set_option('display.max_columns', None)
 
 class DataHandler:
-    def __init__(self, consumer_key, client_secret):
+    def __init__(self, consumer_key, client_secret, access_token, account_id):
         self.consumer_key = consumer_key
         self.client_secret = client_secret
+        self.access_token = access_token
         self.auth = OAuth1(client_key=consumer_key, client_secret=client_secret)
+        self.account_id = account_id
+
+    def get_ad_spending(self, start_date, end_date):
+        # Define the endpoint and parameters
+        start_date = start_date[:10]
+        end_date = end_date[:10]
+        # Convert to datetime object
+        start_obj = datetime.strptime(start_date, "%Y-%m-%d")
+        end_obj = datetime.strptime(end_date, "%Y-%m-%d")
+        # Convert to YYYY-MM-DD format
+        start_date = start_obj.strftime("%Y-%m-%d")
+        end_date = end_obj.strftime("%Y-%m-%d")
+        base_url = f"https://graph.facebook.com/v19.0/act_{self.account_id}/insights"
+        params = {
+            "access_token": self.access_token,
+            "level": "adset",
+            "fields": "spend,adset_name,campaign_name",
+            "time_range": json.dumps({"since": start_date, "until": end_date})
+        }
+
+        # Initialize list to store data
+        all_data = []
+        excluded_keywords = ['Kandidaatwerving', "SDIM", 'Interesses']
+        # Function to fetch a page
+        def fetch_page(url, params):
+            response = requests.get(url, params=params)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                raise Exception(f"Error: {response.status_code} - {response.text}")
+
+        # Fetch first page
+        data = fetch_page(base_url, params)
+        all_data.extend(data["data"])
+
+        # Handle pagination
+        while "paging" in data and "next" in data["paging"]:
+            next_url = data["paging"]["next"]
+            data = fetch_page(next_url, params=None)  # No params needed as they're included in the URL
+            all_data.extend(data["data"])
+
+        # Convert to a DataFrame
+        df = pd.DataFrame(all_data)
+
+        # Convert spend column to float if necessary
+        df["uitgave"] = df["spend"].astype(float)
+
+        # Define the list of locations
+        locaties = list(locations.keys())
+        print(locaties)
+        # Map ad sets to locations
+        def map_location(adset_name, locaties):
+            adset_name_lower = adset_name.lower()
+            for location in locaties:
+                if location.lower() in adset_name_lower:
+                    return location
+            return None
+
+        df["locatie"] = df["adset_name"].apply(lambda x: map_location(x, locaties))
+
+        # Function to filter out rows with specific keywords
+
+        # Function to filter out rows with specific keywords
+        def filter_keywords(adset_name, keywords):
+            adset_name_lower = adset_name.lower()
+            for keyword in keywords:
+                if keyword.lower() in adset_name_lower:
+                    return False
+            return True
+
+        # Apply keyword filtering
+
+        df_filtered = df[df["adset_name"].apply(lambda x: filter_keywords(x, excluded_keywords))]
+
+        # Filter rows with no location match
+        df_filtered = df_filtered[df_filtered["locatie"].notna()]
+        df_campaign = df_filtered.groupby(["adset_name"])["campaign_name"].first().reset_index()
+        campaign_dict = dict(zip(df_campaign["adset_name"], df_campaign["campaign_name"]))
+        # Aggregate by ad set name to avoid duplicates
+        df_agg = df_filtered.groupby(["locatie", "adset_name"])["uitgave"].sum().reset_index()
+        df_merged = pd.merge(df_agg, df_campaign, on="adset_name", how="left")
+
+        # Create a bar chart
+        # Create a bar chart
+        fig = px.bar(df_merged, x="locatie", y="uitgave", color="adset_name",
+                     title="Ad Spending by Location",
+                     hover_data={"campaign_name": True, "uitgave": True, "adset_name": False},
+                     labels={"locatie": "Location", "uitgave": "Spending", "adset_name": "Ad Set"})
+
+        # Update hover template to include ad set name, campaign name, and spending
+        fig.update_traces(
+            hovertemplate="Advertentie: %{customdata[1]}<br>Campagne: %{customdata[0]}<br>Uitgave: €%{y}")
+
+        return fig
 
     def get_entries_per_location(self, form_name, selected_location):
         url = f'{base_url}/forms/{forms[form_name]}/entries'
@@ -132,6 +230,7 @@ class DataHandler:
             bar = px.bar(title="Inzendingen per maand voor bijeenkomst")
             return df, df, bar
 
+        print(df)
         keep_columns = ['1', '2', '5', '17', '9', '8', '6']
         presentielijst = ['1']
         df2 = df[presentielijst]

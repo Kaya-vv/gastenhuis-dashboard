@@ -4,18 +4,15 @@ from layout import app_layout
 from dash_bootstrap_templates import load_figure_template
 from dash_extensions.enrich import Output, Input
 from callbacks import update_graph, download_excel
-from config import KEY, SECRET, form_name
+from config import KEY, SECRET,ACCESS_TOKEN, account_id, form_name
 from data_handler import DataHandler
 from utils import get_info_data
 import sys
 print("Python Version:", sys.version)
 load_figure_template('LUX')
 
-# TODO: Bar chart returnen in dcc.tabs van callbacks.py,
-#  hiervoor moet je get_infobijeenkomst aanpassen (overnemen van get_per_locatie)
 
-
-data = DataHandler(KEY, SECRET)
+data = DataHandler(KEY, SECRET, ACCESS_TOKEN, account_id)
 infobijeenkomst_form, info_name = get_info_data()
 
 
@@ -31,6 +28,7 @@ app.callback(
     Input('one', 'value'),
     Input('three', 'value'),
     Input('info_bijeenkomst', 'value'),
+    Input('advertenties', 'value'),
     Input('date_picker', 'start_date'),
     Input('date_picker', 'end_date')
 )(update_graph)
