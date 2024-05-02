@@ -95,10 +95,11 @@ class DataHandler:
         # Filter rows with no location match
         df_filtered = df_filtered[df_filtered["locatie"].notna()]
         df_campaign = df_filtered.groupby(["adset_name"])["campaign_name"].first().reset_index()
-        campaign_dict = dict(zip(df_campaign["adset_name"], df_campaign["campaign_name"]))
         # Aggregate by ad set name to avoid duplicates
         df_agg = df_filtered.groupby(["locatie", "adset_name"])["uitgave"].sum().reset_index()
         df_merged = pd.merge(df_agg, df_campaign, on="adset_name", how="left")
+        # Aggregate total spending by location
+        df_total_spending = df_merged.groupby("locatie")["uitgave"].sum().reset_index()
 
         # Create a bar chart
         # Create a bar chart
@@ -111,6 +112,19 @@ class DataHandler:
         fig.update_traces(
             hovertemplate="Advertentie: %{customdata[1]}<br>Campagne: %{customdata[0]}<br>Uitgave: €%{y}")
 
+        # Add annotations for total spending by location
+        for i in range(len(df_total_spending)):
+            total_spending_rounded = int(
+                round(df_total_spending.loc[i, 'uitgave']))  # Round the total spending and convert to integer
+            fig.add_annotation(
+                x=df_total_spending.loc[i, 'locatie'],
+                y=df_total_spending.loc[i, 'uitgave'],
+                text=f"€{total_spending_rounded}",
+                showarrow=False,
+                font=dict(color='black'),  # Change text color to black
+                xshift=1,  # Adjust this value to change the horizontal position of the annotation
+                yshift=20  # Adjust this value to change the vertical position of the annotation
+            )
         return fig
 
     def get_entries_per_location(self, form_name, selected_location):
