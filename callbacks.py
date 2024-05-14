@@ -18,8 +18,11 @@ app = app_layout(fig, form_name, info_name)
 
 
 def update_graph(value, selected_location, info_bijeenkomst, advertenties, start_date, end_date):
-
     header_text = "Formulieren Dashboard"
+    if value is None:
+        return ["Formulieren Dashboard", ""]
+
+    # Check if a location is selected
     if selected_location:
         header_text = selected_location
 
@@ -36,7 +39,6 @@ def update_graph(value, selected_location, info_bijeenkomst, advertenties, start
                 plot_bgcolor='#ecf0f1',
                 barmode="group",
                 paper_bgcolor='#ecf0f1',
-
             )
             px.update_traces(marker_color='#c4336d', hovertemplate='Brochures: %{y}',
                              texttemplate='%{y}', textposition='outside')
@@ -46,7 +48,6 @@ def update_graph(value, selected_location, info_bijeenkomst, advertenties, start
             px.add_traces(px2.data)
             px.update_layout(
                 margin=dict(t=40),
-
             )
         else:
             px.update_layout(
@@ -60,24 +61,8 @@ def update_graph(value, selected_location, info_bijeenkomst, advertenties, start
             px.update_traces(texttemplate='%{y}', textposition='outside', marker_color='#c4336d',
                              hovertemplate='%{x}: %{y}')
 
-    else:
-        # If no location is selected, display a bar chart
-
-        px = data.get_entries(value, start_date, end_date)
-
-        px.update_layout(
-            title_text=f'{value}',
-            title_x=0.5,  # Center the chart title
-            xaxis_title='Vestigingen',
-            legend=dict(title='Bron:', orientation='h', y=1, x=0.5, xanchor='center', yanchor='bottom'),
-            yaxis_title='Aantal',
-            showlegend=True,  # Hide legend
-            plot_bgcolor='#ecf0f1',  # Set plot background color
-            paper_bgcolor='#ecf0f1',  # Set paper background color
-            xaxis=dict(categoryorder='total descending')
-        )
-
-    if info_bijeenkomst:
+    # Check if info_bijeenkomst is selected
+    elif info_bijeenkomst:
         header_text = info_bijeenkomst
         info_bijeenkomst = "Informatiebijeenkomst " + info_bijeenkomst
         df, df2, bar = data.get_infobijeenkomst(infobijeenkomst_form[info_bijeenkomst])
@@ -116,18 +101,17 @@ def update_graph(value, selected_location, info_bijeenkomst, advertenties, start
 
         ]
         return [
-
             dcc.Tabs(id='tabs', value='tab1', children=[
                 dcc.Tab(label='Inzendingen tabel', value='tab1', selected_style={'width': '25%'},
                         style={'width': '25%'}, children=tabs_content),
                 dcc.Tab(label='Balk grafiek', value='tab2', selected_style={'width': '25%'}, style={'width': '25%'},
-                        children=dcc.Graph(
-                            figure=bar)),
+                        children=dcc.Graph(figure=bar)),
             ])
         ], header_text
-    if advertenties:
-        header_text = "Alle advertenties"
 
+    # Check if advertenties is selected
+    elif advertenties:
+        header_text = "Alle advertenties"
         px = data.get_ad_spending(start_date, end_date)
 
         px.update_layout(
@@ -140,11 +124,24 @@ def update_graph(value, selected_location, info_bijeenkomst, advertenties, start
             plot_bgcolor='#ecf0f1',  # Set plot background color
             paper_bgcolor='#ecf0f1',  # Set paper background color
             xaxis=dict(categoryorder='total descending')
+        )
 
+    # If none of the dropdowns are selected, display a default chart
+    else:
+        px = data.get_entries(value, start_date, end_date)
+        px.update_layout(
+            title_text=f'{value}',
+            title_x=0.5,  # Center the chart title
+            xaxis_title='Vestigingen',
+            legend=dict(title='Bron:', orientation='h', y=1, x=0.5, xanchor='center', yanchor='bottom'),
+            yaxis_title='Aantal',
+            showlegend=True,  # Hide legend
+            plot_bgcolor='#ecf0f1',  # Set plot background color
+            paper_bgcolor='#ecf0f1',  # Set paper background color
+            xaxis=dict(categoryorder='total descending')
         )
 
     return [dcc.Graph(id='graph1', figure=px)], header_text
-
 
 def download_excel(n_clicks, info_bijeenkomst):
     if n_clicks is None or info_bijeenkomst is None:

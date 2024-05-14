@@ -67,7 +67,7 @@ class DataHandler:
 
         # Define the list of locations
         locaties = list(locations.keys())
-        print(locaties)
+
         # Map ad sets to locations
         def map_location(adset_name, locaties):
             adset_name_lower = adset_name.lower()
@@ -90,8 +90,10 @@ class DataHandler:
 
         # Apply keyword filtering
 
-        df_filtered = df[df["adset_name"].apply(lambda x: filter_keywords(x, excluded_keywords))]
-
+        df_filtered = df[
+            df["adset_name"].apply(lambda x: filter_keywords(x, excluded_keywords)) &
+            df["campaign_name"].apply(lambda x: filter_keywords(x, excluded_keywords))
+            ]
         # Filter rows with no location match
         df_filtered = df_filtered[df_filtered["locatie"].notna()]
         df_campaign = df_filtered.groupby(["adset_name"])["campaign_name"].first().reset_index()
@@ -169,7 +171,7 @@ class DataHandler:
     def get_entries(self, form_name, start_date, end_date):
 
         url = f'{base_url}/forms/{forms[form_name]}/entries'
-        print(form_name)
+
         params = {
             'paging[page_size]': 2000,
         }
@@ -237,14 +239,14 @@ class DataHandler:
         }
         response = requests.get(url, auth=self.auth, params=params)
         entries = response.json()
-        print(entries)
+
         data = entries['entries']
         df = pd.DataFrame(data)
         if df.empty:
             bar = px.bar(title="Inzendingen per maand voor bijeenkomst")
             return df, df, bar
 
-        print(df)
+
         keep_columns = ['1', '2', '5', '17', '9', '8', '6']
         presentielijst = ['1']
         df2 = df[presentielijst]
@@ -288,8 +290,7 @@ class DataHandler:
         monthly_counts_dict = dict(monthly_counts)
         reversed_keys = list(monthly_counts_dict.keys())[::-1]
         reversed_values = [monthly_counts_dict[key] for key in reversed_keys]
-        print(df)
-        print(df2)
+
         bar = px.bar(x=reversed_keys, y=reversed_values,
                      title=f"Inzendingen per maand voor bijeenkomst")
 

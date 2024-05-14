@@ -39,7 +39,7 @@ def app_layout(fig, form_name, info_bijeenkomst):
             ),
             dbc.Nav(
                 [
-                    dcc.Dropdown(form_name, 'Brochure wonen', id='one'),
+                    dcc.Dropdown(form_name, "Brochure wonen", id='one'),
                     html.Br(),
                     dcc.DatePickerRange(
                         month_format='MMMM Y',
