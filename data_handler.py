@@ -40,7 +40,7 @@ class DataHandler:
 
         # Initialize list to store data
         all_data = []
-        excluded_keywords = ['Kandidaatwerving', "SDIM", 'Interesses', 'Zorgwerving']
+        excluded_keywords = ['Kandidaatwerving', "SDIM", 'Interesses', 'Zorgwerving', "WB |"]
         # Function to fetch a page
         def fetch_page(url, params):
             response = requests.get(url, params=params)
