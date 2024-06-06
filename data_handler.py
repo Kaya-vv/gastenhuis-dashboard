@@ -142,23 +142,13 @@ class DataHandler:
             }),
         }
 
-        response = requests.get(url, auth=self.auth, params=params)
-
-        logging.info(f"Response content: {response.content}")
-        if response.status_code == 200:
-            try:
-                # Check if response content is empty
-                if response.content.strip():
-                    entries = response.json()
-                else:
-                    logging.error("Empty response content")
-                    entries = {}
-            except json.JSONDecodeError as e:
-                logging.error(f"JSON decode error: {e}")
-                raise
-        else:
-            logging.error(f"Error: Received response with status code {response.status_code}")
+        try:
+            response = requests.get(url, auth=self.auth, params=params)
+            response.raise_for_status()
+            entries = response.json()
+        except requests.exceptions.RequestException as e:
             entries = {}
+            print(e)
         # Count occurrences in each month
         monthly_counts = defaultdict(int)
 
@@ -190,22 +180,13 @@ class DataHandler:
         params = {
             'paging[page_size]': 2000,
         }
-        response = requests.get(url, auth=self.auth, params=params)
-
-        if response.status_code == 200:
-            try:
-                # Check if response content is empty
-                if response.content.strip():
-                    entries = response.json()
-                else:
-                    logging.error("Empty response content")
-                    entries = {}
-            except json.JSONDecodeError as e:
-                logging.error(f"JSON decode error: {e}")
-                raise
-        else:
-            logging.error(f"Error: Received response with status code {response.status_code}")
+        try:
+            response = requests.get(url, auth=self.auth, params=params)
+            response.raise_for_status()
+            entries = response.json()
+        except requests.exceptions.RequestException as e:
             entries = {}
+            print(e)
 
         locations = []
 
@@ -265,22 +246,13 @@ class DataHandler:
         params = {
             'paging[page_size]': 50,
         }
-        response = requests.get(url, auth=self.auth, params=params)
-        logging.info(f"Response content: {response.content}")
-        if response.status_code == 200:
-            try:
-                # Check if response content is empty
-                if response.content.strip():
-                    entries = response.json()
-                else:
-                    logging.error("Empty response content")
-                    entries = {}
-            except json.JSONDecodeError as e:
-                logging.error(f"JSON decode error: {e}")
-                raise
-        else:
-            logging.error(f"Error: Received response with status code {response.status_code}")
+        try:
+            response = requests.get(url, auth=self.auth, params=params)
+            response.raise_for_status()
+            entries = response.json()
+        except requests.exceptions.RequestException as e:
             entries = {}
+            print(e)
         data = entries['entries']
         df = pd.DataFrame(data)
         if df.empty:
@@ -343,21 +315,14 @@ class DataHandler:
         params = {
             'paging[page_size]': 40,
         }
-        response = requests.get(url, auth=self.auth, params=params)
-        if response.status_code == 200:
-            try:
-                # Check if response content is empty
-                if response.content.strip():
-                    entries = response.json()
-                else:
-                    logging.error("Empty response content")
-                    entries = {}
-            except json.JSONDecodeError as e:
-                logging.error(f"JSON decode error: {e}")
-                raise
-        else:
-            logging.error(f"Error: Received response with status code {response.status_code}")
+
+        try:
+            response = requests.get(url, auth=self.auth, params=params)
+            response.raise_for_status()
+            entries = response.json()
+        except requests.exceptions.RequestException as e:
             entries = {}
+            print(e)
         # filter all informatiebijeenkomsten from forms
         filtered_data = {entry['title']: entry['id'] for entry_id, entry in entries.items() if
                          'informatiebijeenkomst' in entry['title'].lower()}
