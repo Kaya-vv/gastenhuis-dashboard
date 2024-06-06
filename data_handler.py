@@ -147,12 +147,17 @@ class DataHandler:
         logging.info(f"Response content: {response.content}")
         if response.status_code == 200:
             try:
-                entries = response.json()
+                # Check if response content is empty
+                if response.content.strip():
+                    entries = response.json()
+                else:
+                    logging.error("Empty response content")
+                    entries = {}
             except json.JSONDecodeError as e:
                 logging.error(f"JSON decode error: {e}")
                 raise
         else:
-            print(f"Error: Received response with status code {response.status_code}")
+            logging.error(f"Error: Received response with status code {response.status_code}")
             entries = {}
         # Count occurrences in each month
         monthly_counts = defaultdict(int)
@@ -189,12 +194,17 @@ class DataHandler:
 
         if response.status_code == 200:
             try:
-                entries = response.json()
+                # Check if response content is empty
+                if response.content.strip():
+                    entries = response.json()
+                else:
+                    logging.error("Empty response content")
+                    entries = {}
             except json.JSONDecodeError as e:
                 logging.error(f"JSON decode error: {e}")
                 raise
         else:
-            print(f"Error: Received response with status code {response.status_code}")
+            logging.error(f"Error: Received response with status code {response.status_code}")
             entries = {}
 
         locations = []
@@ -259,12 +269,17 @@ class DataHandler:
         logging.info(f"Response content: {response.content}")
         if response.status_code == 200:
             try:
-                entries = response.json()
+                # Check if response content is empty
+                if response.content.strip():
+                    entries = response.json()
+                else:
+                    logging.error("Empty response content")
+                    entries = {}
             except json.JSONDecodeError as e:
                 logging.error(f"JSON decode error: {e}")
                 raise
         else:
-            print(f"Error: Received response with status code {response.status_code}")
+            logging.error(f"Error: Received response with status code {response.status_code}")
             entries = {}
         data = entries['entries']
         df = pd.DataFrame(data)
@@ -331,12 +346,17 @@ class DataHandler:
         response = requests.get(url, auth=self.auth, params=params)
         if response.status_code == 200:
             try:
-                entries = response.json()
+                # Check if response content is empty
+                if response.content.strip():
+                    entries = response.json()
+                else:
+                    logging.error("Empty response content")
+                    entries = {}
             except json.JSONDecodeError as e:
                 logging.error(f"JSON decode error: {e}")
                 raise
         else:
-            print(f"Error: Received response with status code {response.status_code}")
+            logging.error(f"Error: Received response with status code {response.status_code}")
             entries = {}
         # filter all informatiebijeenkomsten from forms
         filtered_data = {entry['title']: entry['id'] for entry_id, entry in entries.items() if
