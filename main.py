@@ -43,5 +43,4 @@ app.callback(
 # Run the app
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 4000))
-    app.run_server(debug=True, host='0.0.0.0', port=port)
+    app.run_server(debug=True, host="0.0.0.0", port=10000)
