@@ -145,11 +145,15 @@ class DataHandler:
         response = requests.get(url, auth=self.auth, params=params)
 
         logging.info(f"Response content: {response.content}")
-        try:
-            entries = response.json()
-        except json.JSONDecodeError as e:
-            logging.error(f"JSON decode error: {e}")
-            raise
+        if response.status_code == 200:
+            try:
+                entries = response.json()
+            except json.JSONDecodeError as e:
+                logging.error(f"JSON decode error: {e}")
+                raise
+        else:
+            print(f"Error: Received response with status code {response.status_code}")
+            entries = {}
         # Count occurrences in each month
         monthly_counts = defaultdict(int)
 
@@ -183,12 +187,15 @@ class DataHandler:
         }
         response = requests.get(url, auth=self.auth, params=params)
 
-        logging.info(f"Response content: {response.content}")
-        try:
-            entries = response.json()
-        except json.JSONDecodeError as e:
-            logging.error(f"JSON decode error: {e}")
-            raise
+        if response.status_code == 200:
+            try:
+                entries = response.json()
+            except json.JSONDecodeError as e:
+                logging.error(f"JSON decode error: {e}")
+                raise
+        else:
+            print(f"Error: Received response with status code {response.status_code}")
+            entries = {}
 
         locations = []
 
@@ -250,12 +257,15 @@ class DataHandler:
         }
         response = requests.get(url, auth=self.auth, params=params)
         logging.info(f"Response content: {response.content}")
-        try:
-            entries = response.json()
-        except json.JSONDecodeError as e:
-            logging.error(f"JSON decode error: {e}")
-            raise
-
+        if response.status_code == 200:
+            try:
+                entries = response.json()
+            except json.JSONDecodeError as e:
+                logging.error(f"JSON decode error: {e}")
+                raise
+        else:
+            print(f"Error: Received response with status code {response.status_code}")
+            entries = {}
         data = entries['entries']
         df = pd.DataFrame(data)
         if df.empty:
@@ -322,9 +332,9 @@ class DataHandler:
         if response.status_code == 200:
             try:
                 entries = response.json()
-            except json.JSONDecodeError:
-                print("Failed to decode JSON response")
-                entries = {}
+            except json.JSONDecodeError as e:
+                logging.error(f"JSON decode error: {e}")
+                raise
         else:
             print(f"Error: Received response with status code {response.status_code}")
             entries = {}
