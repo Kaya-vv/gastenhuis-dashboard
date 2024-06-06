@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import plotly.express as px
 import requests
 from requests_oauthlib import OAuth1Session, OAuth1
+import logging
 from config import base_url, forms, form_field_id
 pd.set_option('display.max_colwidth', None)
 
@@ -143,7 +144,12 @@ class DataHandler:
 
         response = requests.get(url, auth=self.auth, params=params)
 
-        entries = response.json()
+        logging.info(f"Response content: {response.content}")
+        try:
+            entries = response.json()
+        except json.JSONDecodeError as e:
+            logging.error(f"JSON decode error: {e}")
+            raise
         # Count occurrences in each month
         monthly_counts = defaultdict(int)
 
@@ -177,7 +183,12 @@ class DataHandler:
         }
         response = requests.get(url, auth=self.auth, params=params)
 
-        entries = response.json()
+        logging.info(f"Response content: {response.content}")
+        try:
+            entries = response.json()
+        except json.JSONDecodeError as e:
+            logging.error(f"JSON decode error: {e}")
+            raise
 
         locations = []
 
@@ -238,7 +249,12 @@ class DataHandler:
             'paging[page_size]': 50,
         }
         response = requests.get(url, auth=self.auth, params=params)
-        entries = response.json()
+        logging.info(f"Response content: {response.content}")
+        try:
+            entries = response.json()
+        except json.JSONDecodeError as e:
+            logging.error(f"JSON decode error: {e}")
+            raise
 
         data = entries['entries']
         df = pd.DataFrame(data)
