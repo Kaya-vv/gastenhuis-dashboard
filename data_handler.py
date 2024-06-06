@@ -303,8 +303,15 @@ class DataHandler:
             'paging[page_size]': 40,
         }
         response = requests.get(url, auth=self.auth, params=params)
-        entries = response.json()
-
+        if response.status_code == 200:
+            try:
+                entries = response.json()
+            except json.JSONDecodeError:
+                print("Failed to decode JSON response")
+                entries = {}
+        else:
+            print(f"Error: Received response with status code {response.status_code}")
+            entries = {}
         # filter all informatiebijeenkomsten from forms
         filtered_data = {entry['title']: entry['id'] for entry_id, entry in entries.items() if
                          'informatiebijeenkomst' in entry['title'].lower()}
