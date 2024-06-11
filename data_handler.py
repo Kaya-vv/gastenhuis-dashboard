@@ -323,6 +323,7 @@ class DataHandler:
         except requests.exceptions.RequestException as e:
             entries = {}
             print(e)
+
         # filter all informatiebijeenkomsten from forms
         filtered_data = {entry['title']: entry['id'] for entry_id, entry in entries.items() if
                          'informatiebijeenkomst' in entry['title'].lower()}
