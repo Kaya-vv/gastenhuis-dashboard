@@ -266,6 +266,7 @@ class DataHandler:
 
         df = df[keep_columns]
 
+        print(df['9'])
         column_name_mapping = {
             '1': 'Naam',
             '2': 'Email',
@@ -285,8 +286,23 @@ class DataHandler:
 
         # balk grafiek
         monthly_counts = defaultdict(int)
-
+        color_map = {
+            'Facebook': '#3b5998',  # Facebook blue
+            'Instagram': '#e4405f',  # Instagram pink
+            'LinkedIn': '#0077b5',  # LinkedIn blue
+            'Google': '#FFD700',  # Google blue
+            'Via de lokale of regionale kranten of media': '#C9FFB2',  # Google red
+            'Via kennissen/vrienden/familie': '#55acee',  # Twitter blue
+            'Anders': 'black'
+        }
+        source_data = {}
         for request in entries['entries']:
+            source = request['9']
+            # Bronnen verzamelen als anders
+            if source not in color_map:
+                source = "Anders"
+
+            source_data[source] = source_data.get(source, 0) + 1
             date_str = request['date_created']
             # Convert string to datetime object
             date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
@@ -298,14 +314,26 @@ class DataHandler:
             month_year = f'{month_name} {year}'
             # Increment count for the corresponding month
             monthly_counts[month_year] += 1
+        print(source_data)
 
         # Create a dictionary with month names as keys and occurrences as values
         monthly_counts_dict = dict(monthly_counts)
-        reversed_keys = list(monthly_counts_dict.keys())[::-1]
-        reversed_values = [monthly_counts_dict[key] for key in reversed_keys]
+        # Extract the month and total count
+        month = list(monthly_counts_dict.keys())[0]
+        total_count = list(monthly_counts_dict.values())[0]
 
-        bar = px.bar(x=reversed_keys, y=reversed_values,
-                     title=f"Inzendingen per maand voor bijeenkomst")
+        # Create a DataFrame from source data with the month
+        data = []
+        for source, count in source_data.items():
+            data.append({'Maand': month, 'Bron': source, 'Aantal': count})
+        # Create a DataFrame for Plotly
+
+        df3 = pd.DataFrame(data)
+
+        bar = px.bar(df3, x='Maand', y='Aantal', color='Bron', barmode='stack',
+             color_discrete_map=color_map,
+             title="Inzendingen per maand voor bijeenkomst")
+        bar.update_layout(bargap=0.8)
 
         return df, df2, bar
 

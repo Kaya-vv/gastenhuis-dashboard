@@ -20,7 +20,6 @@ start_date_one_week_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%
 end_date_today = datetime.today().strftime('%Y-%m-%d')
 fig = data.get_entries("Brochure wonen", start_date_one_week_ago, end_date_today)
 app = app_layout(fig, form_name, info_name)
-test = data.get_info_forms()
 
 app.callback(
     Output('graph-container', 'children'),

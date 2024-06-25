@@ -66,7 +66,7 @@ def update_graph(value, selected_location, info_bijeenkomst, advertenties, start
         header_text = info_bijeenkomst
         info_bijeenkomst = "Informatiebijeenkomst " + info_bijeenkomst
         df, df2, bar = data.get_infobijeenkomst(infobijeenkomst_form[info_bijeenkomst])
-        bar.update_traces(marker_color='#c4336d', hovertemplate='%{x}: %{y}')  # Set bar color
+
         tabs_content = [html.Button(
             "Export naar Excel",
             id="excel-button",
