@@ -296,7 +296,7 @@ class DataHandler:
             'Via de lokale of regionale kranten of media': '#C9FFB2',  # Google red
             'Via de krant of een magazine': '#C9FFB2',
             'Buitenreclame': '#e4405f',
-            'Via een folder over dit Gastenhuis': '0077b5',
+            'Via een folder over dit Gastenhuis': '0077b6',
             'Via kennissen/vrienden/familie': '#55acee',  # Twitter blue
             'Anders': 'black'
         }
