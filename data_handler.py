@@ -287,11 +287,16 @@ class DataHandler:
         # balk grafiek
         monthly_counts = defaultdict(int)
         color_map = {
-            'Facebook': '#3b5998',  # Facebook blue
+            'Facebook': '#3b5998',
+            'Social media':'#3b5998',
+            'Radio of Spotify': 'Green',# Facebook blue
             'Instagram': '#e4405f',  # Instagram pink
             'LinkedIn': '#0077b5',  # LinkedIn blue
             'Google': '#FFD700',  # Google blue
             'Via de lokale of regionale kranten of media': '#C9FFB2',  # Google red
+            'Via de krant of een magazine': '#C9FFB2',
+            'Buitenreclame': '#e4405f',
+            'Via een folder over dit Gastenhuis': '0077b5',
             'Via kennissen/vrienden/familie': '#55acee',  # Twitter blue
             'Anders': 'black'
         }
